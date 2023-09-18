@@ -2,12 +2,14 @@ import dataclasses
 
 from fastapi import APIRouter
 
+from raspberry.routers import raspberry_router
+
 
 @dataclasses.dataclass
 class AppRouter:
     """The main router of the project, which adds a prefix with the version for all defined routers"""
 
-    v1: tuple[APIRouter, ...] = ()
+    v1: tuple[APIRouter, ...] = (raspberry_router,)
 
     @classmethod
     @property
