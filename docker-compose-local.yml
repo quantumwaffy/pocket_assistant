@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  api:
+    build: .
+    ports:
+      - "8006:8000"
+    container_name: pocket_assistant_api
+    env_file:
+      - .env
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+    restart: on-failure
+    volumes:
+      - ./.:/app
