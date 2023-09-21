@@ -4,6 +4,11 @@ services:
     build: .
     ports:
       - "${API_HOST}:${API_PORT}:8000"
+    depends_on:
+      mongo_db:
+        condition: service_started
+      redis:
+        condition: service_healthy
     container_name: pocket_assistant_api
     env_file:
       - .env
@@ -14,3 +19,32 @@ services:
     restart: on-failure
     volumes:
       - ./.:/app
+
+  mongo_db:
+    image: mongo
+    container_name: mongo_db
+    env_file:
+      - .env
+    ports:
+      - '${MONGO_EXPOSE_PORT}:27017'
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis
+    ports:
+      - "${REDIS_EXPOSE_PORT}:${REDIS_PORT}"
+    container_name: redis
+    restart: on-failure
+    healthcheck:
+      test: redis-cli -p ${REDIS_PORT} ping | grep PONG
+      interval: 3s
+      timeout: 2s
+      retries: 3
+    command: redis-server --save 20 1 --loglevel warning --port ${REDIS_PORT}
+    volumes:
+      - cache:/data
+
+volumes:
+  mongo_data:
+  cache:

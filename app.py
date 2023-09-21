@@ -1,9 +1,12 @@
+from beanie import init_beanie
 from fastapi import FastAPI, status
 
 import routing
 from config import CONFIG
+from core import broadcasting
 from core import schemas as core_schemas
 from meta import ProjectMeta
+from raspberry import models as rasp_models
 
 
 def get_app() -> FastAPI:
@@ -24,3 +27,17 @@ def get_app() -> FastAPI:
 
 
 app: FastAPI = get_app()
+
+
+@app.on_event("startup")
+async def startup() -> None:
+    await broadcasting.broadcast.connect()
+    await init_beanie(
+        database=CONFIG.MONGO.client[CONFIG.MONGO.MONGO_INITDB_DATABASE],
+        document_models=[rasp_models.SensorData],
+    )
+
+
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    await broadcasting.broadcast.disconnect()

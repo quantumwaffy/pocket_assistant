@@ -1,9 +1,10 @@
 import datetime
 
-from pydantic import BaseModel, Field
+from beanie import Document
+from pydantic import Field
 
 
-class SensorData(BaseModel):
+class SensorData(Document):
     temperature: float | None = None
     humidity: float | None = None
     sound: int | None = None
