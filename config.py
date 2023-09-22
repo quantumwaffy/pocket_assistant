@@ -7,12 +7,12 @@ from core import base as core_base
 from core import mixins as core_mixins
 
 
-class AppConfig(core_mixins.EnvSettingsMixin):
+class AppConfig(core_mixins.EnvConfigMixin):
     DEBUG: bool = False
     SENDER_CHANNEL: str = uuid.uuid4().hex
 
 
-class MongoSettings(core_base.ServiceSettings):
+class MongoConfig(core_base.ServiceConfig):
     MONGO_INITDB_ROOT_USERNAME: str
     MONGO_INITDB_ROOT_PASSWORD: str
     MONGO_INITDB_DATABASE: str
@@ -34,7 +34,7 @@ class MongoSettings(core_base.ServiceSettings):
         return AsyncIOMotorClient(self.url)
 
 
-class RedisSettings(core_base.ServiceSettings):
+class RedisConfig(core_base.ServiceConfig):
     REDIS_HOST: str
     REDIS_PORT: str
 
@@ -43,12 +43,22 @@ class RedisSettings(core_base.ServiceSettings):
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
 
 
+class TelegramBotConfig(BaseSettings):
+    TG_TOKEN: str
+    TG_PARSE_MODE: str = "HTML"
+
+    @property
+    def webhook_path(self) -> str:
+        return f"/bot/{self.TG_TOKEN}"
+
+
 class Config(BaseSettings):
     """Project settings"""
 
     APP: AppConfig = AppConfig()
-    MONGO: MongoSettings = MongoSettings()
-    REDIS: RedisSettings = RedisSettings()
+    MONGO: MongoConfig = MongoConfig()
+    REDIS: RedisConfig = RedisConfig()
+    BOT: TelegramBotConfig = TelegramBotConfig()
 
 
 CONFIG: Config = Config()

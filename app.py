@@ -1,3 +1,5 @@
+import asyncio
+
 from beanie import init_beanie
 from fastapi import FastAPI, status
 
@@ -7,6 +9,7 @@ from core import broadcasting
 from core import schemas as core_schemas
 from meta import ProjectMeta
 from raspberry import models as rasp_models
+from tg.tg_bot import bot_instances
 
 
 def get_app() -> FastAPI:
@@ -36,6 +39,7 @@ async def startup() -> None:
         database=CONFIG.MONGO.client[CONFIG.MONGO.MONGO_INITDB_DATABASE],
         document_models=[rasp_models.SensorData],
     )
+    asyncio.create_task(bot_instances.dp.start_polling(bot_instances.bot))  # TODO: REMOVE POOLING AFTER TEST
 
 
 @app.on_event("shutdown")

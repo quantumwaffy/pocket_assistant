@@ -1,4 +1,4 @@
-.PHONY: help env up stop rm rmv rmi logs sh init_linters lint sqlmake sqlupgrade test check_lint dropmain updmain
+.PHONY: help env up stop rm rmv rmi logs sh init_linters lint sqlmake sqlupgrade test check_lint dropmain updmain rsmain
 
 # --- Application settings
 default_env_file_name := .env
@@ -26,6 +26,7 @@ help:
 	@echo "    rmi                      Stop and remove docker containers with their images and volumes"
 	@echo "    dropmain                 Stop and remove main app docker container with image and volume"
 	@echo "    updmain                  Stop and remove old main app container with image and volume, rebuild and run new one"
+	@echo "    rsmain                   Restart main app container"
 	@echo "    logs                     Stdout logs from docker containers"
 	@echo "    lint                     Run linting"
 	@echo "    sqlmake MESSAGE          Make migrations with provided MESSAGE for the SQL database"
@@ -90,3 +91,6 @@ dropmain: env
 
 updmain: env
 	@$(compose) $(env_arg) up -d --build $(main_app_service_name)
+
+rsmain: env
+	@$(compose) $(env_arg) restart $(main_app_service_name)

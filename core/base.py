@@ -4,7 +4,7 @@ from typing import Type, TypeVar
 from . import mixins
 
 
-class ServiceSettings(mixins.EnvSettingsMixin, abc.ABC):
+class ServiceConfig(mixins.EnvConfigMixin, abc.ABC):
     @property
     @abc.abstractmethod
     def url(self) -> str:

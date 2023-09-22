@@ -4,5 +4,5 @@ from . import consts
 
 
 class RunnerData(BaseModel):
-    handler: str
+    task: str
     action: consts.TaskAction
