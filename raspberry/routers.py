@@ -4,7 +4,7 @@ from config import CONFIG
 from core.broadcasting import broadcast
 from logger import logger
 
-from . import models
+from . import consts, models, schemas
 
 raspberry_router: APIRouter = APIRouter(
     prefix="/rasp-pi",
@@ -32,7 +32,16 @@ async def sensor_data_sender(ws: WebSocket):
 
 
 # TODO - REMOVE AFTER TEST
-@raspberry_router.get("/test/{msg}")
-async def test(msg: str) -> str:
-    await broadcast.publish(CONFIG.APP.SENDER_CHANNEL, msg)
-    return msg
+@raspberry_router.get("/test-led/{state}")
+async def test_led(state: consts.TaskAction) -> str:
+    msg = schemas.RunnerData(handler="LEDSocketTask", action=state)
+    await broadcast.publish(CONFIG.APP.SENDER_CHANNEL, msg.model_dump_json())
+    return "OK"
+
+
+# TODO - REMOVE AFTER TEST
+@raspberry_router.get("/test-buzzer/{state}")
+async def test_buzzer(state: consts.TaskAction) -> str:
+    msg = schemas.RunnerData(handler="BuzzerTask", action=state)
+    await broadcast.publish(CONFIG.APP.SENDER_CHANNEL, msg.model_dump_json())
+    return "OK"
