@@ -1,4 +1,5 @@
-.PHONY: help env up stop rm rmv rmi logs sh init_linters lint sqlmake sqlupgrade test check_lint dropmain updmain rsmain
+
+.PHONY: help env up stop rm rmv rmi logs sh init_linters lint sqlmake sqlupgrade test dropmain updmain rsmain gha_ci_build_test_image _rm_test_container gha_ci_check_linting gha_ci_test gha_cd_updmain
 
 # --- Application settings
 default_env_file_name := .env
@@ -32,6 +33,10 @@ help:
 	@echo "    sqlmake MESSAGE          Make migrations with provided MESSAGE for the SQL database"
 	@echo "    sqlrun                   Run migrations in the SQL database"
 	@echo "    test                     Run tests for the API service"
+	@echo "    gha_ci_build_test_image  Build test image into GitHub actions"
+	@echo "    gha_ci_check_linting     Check linting for CI into GitHub actions"
+	@echo "    gha_ci_test              Run tests for CI into GitHub actions"
+	@echo "    gha_cd_updmain           Stop and remove old main app container with image and volume, rebuild and run new one for CD into GitHub actions"
 
 env:
 	@if [ ! -f $(default_env_file_name) ]; then \
@@ -74,17 +79,31 @@ sqlmake: up
 sqlupgrade: up
 	@docker exec -it pocket_assistant_api alembic upgrade head
 
+_rm_test_container:
+	@docker rm $(test_api_container_name) -f
+
 test: env
 	@docker build -t $(test_api_image_name) .
 	@docker run $(env_arg) --name $(test_api_container_name) $(test_api_image_name) pytest || true
-	@docker rm $(test_api_container_name) -f
+	$(MAKE) _rm_test_container
 	@docker rmi $(test_api_image_name)
 
-check_lint:
-	@autoflake . --check
-	@black . --check
-	@isort . --check
-	@flake8
+
+gha_ci_build_test_image:
+	@if [ -z $$(docker images -q $(test_api_image_name)) ]; then \
+        docker build -t $(test_api_image_name) . ; \
+    fi
+
+gha_ci_check_linting: gha_ci_build_test_image
+	@docker run $(env_arg) --name $(test_api_container_name) $(test_api_image_name) sh -c "autoflake . --check && black . --check && isort . --check && flake8"
+	$(MAKE) _rm_test_container
+
+gha_ci_test: gha_ci_build_test_image
+	@docker run $(env_arg) --name $(test_api_container_name) $(test_api_image_name) pytest
+	$(MAKE) _rm_test_container
+
+gha_cd_updmain:
+	@$(compose) $(env_arg) up -d --build $(main_app_service_name)
 
 dropmain: env
 	@$(compose) $(env_arg) down --rmi all -v $(main_app_service_name)
