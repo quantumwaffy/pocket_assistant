@@ -1,0 +1,36 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Create .env File
+        env:
+          ENV_PATH: ${{ vars.ENV_FILE_NAME }}
+        run: |
+          echo "API_HOST=${{ vars.API_HOST }}" >> $ENV_PATH
+          echo "API_PORT=${{ vars.API_PORT }}" >> $ENV_PATH
+          echo "DEBUG=${{ vars.DEBUG }}" >> $ENV_PATH
+          echo "MONGO_EXPOSE_PORT=${{ vars.MONGO_EXPOSE_PORT }}" >> $ENV_PATH
+          echo "MONGO_HOST=${{ vars.MONGO_HOST }}" >> $ENV_PATH
+          echo "REDIS_EXPOSE_PORT=${{ vars.REDIS_EXPOSE_PORT }}" >> $ENV_PATH
+          echo "REDIS_HOST=${{ vars.REDIS_HOST }}" >> $ENV_PATH
+          echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> $ENV_PATH
+          echo "MONGO_INITDB_DATABASE=${{ secrets.MONGO_INITDB_DATABASE }}" >> $ENV_PATH
+          echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}" >> $ENV_PATH
+          echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}" >> $ENV_PATH
+          echo "TG_TOKEN=${{ secrets.TG_TOKEN }}" >> $ENV_PATH
+      - name: Rebuild and run
+        run: make gha_cd_updmain
+
