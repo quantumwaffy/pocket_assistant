@@ -10,7 +10,9 @@ env_file_name := .env
 env_snippet_repo := git@github.com:ba2cdbc59e955b924f11ffc7a1c97530.git
 
 # --- Docker
-compose := docker compose -f docker-compose-local.yml
+compose_cmd := docker compose -f
+compose_local := $(compose_cmd) docker-compose-local.yml
+compose_deployment := $(compose_cmd) docker-compose-deployment.yml
 main_app_service_name := api
 
 # --- Docker test
@@ -50,22 +52,22 @@ init_linters:
 	@pre-commit install
 
 up: env
-	@$(compose) $(env_arg) up -d
+	@$(compose_local) $(env_arg) up -d
 
 stop: env
-	@$(compose) $(env_arg) stop
+	@$(compose_local) $(env_arg) stop
 
 rm: env
-	@$(compose) $(env_arg) down
+	@$(compose_local) $(env_arg) down
 
 rmv: env
-	@$(compose) $(env_arg) down -v
+	@$(compose_local) $(env_arg) down -v
 
 rmi: env
-	@$(compose) $(env_arg) down --rmi all -v
+	@$(compose_local) $(env_arg) down --rmi all -v
 
 logs: up
-	@$(compose) logs -f
+	@$(compose_local) logs -f
 
 sh: up
 	@docker exec -it $(firstword $(filter-out $@,$(MAKEOVERRIDES) $(MAKECMDGOALS))) sh
@@ -103,13 +105,13 @@ gha_ci_test: gha_ci_build_test_image
 	$(MAKE) _rm_test_container
 
 gha_cd_updmain:
-	@$(compose) $(env_arg) up -d --build $(main_app_service_name)
+	@$(compose_deployment) $(env_arg) up -d --build $(main_app_service_name)
 
 dropmain: env
-	@$(compose) $(env_arg) down --rmi all -v $(main_app_service_name)
+	@$(compose_local) $(env_arg) down --rmi all -v $(main_app_service_name)
 
 updmain: env
-	@$(compose) $(env_arg) up -d --build $(main_app_service_name)
+	@$(compose_local) $(env_arg) up -d --build $(main_app_service_name)
 
 rsmain: env
-	@$(compose) $(env_arg) restart $(main_app_service_name)
+	@$(compose_local) $(env_arg) restart $(main_app_service_name)

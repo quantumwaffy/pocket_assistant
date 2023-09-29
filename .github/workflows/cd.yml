@@ -32,5 +32,4 @@ jobs:
           echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}" >> $ENV_PATH
           echo "TG_TOKEN=${{ secrets.TG_TOKEN }}" >> $ENV_PATH
       - name: Rebuild and run
-        run: make gha_cd_updmain
-
+        run: sudo make gha_cd_updmain

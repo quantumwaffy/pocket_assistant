@@ -16,6 +16,12 @@ variable "EC2_SECURITY_GROUP_NAME" {
   default     = "pocket_assistant_ec2_security_group"
 }
 
+variable "EC2_DEFAULT_USER" {
+  description = "Default user for chosen image"
+  type        = string
+  default     = "ec2-user"
+}
+
 variable "GITHUB_PAT" {
   description = "GitHub personal access token to set up self-hosted runner"
   type        = string

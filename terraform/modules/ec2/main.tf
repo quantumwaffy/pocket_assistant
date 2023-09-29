@@ -1,11 +1,9 @@
 resource "aws_instance" "Amazon_Linux" {
-  ami                    = "ami-0766f68f0b06ab145"
+  ami                    = "ami-04e601abe3e1a910f"
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.ec2_security_group.id]
   user_data              = templatefile("./modules/ec2/ec2_boot.sh.tpl", {
-    gh_pat               = var.GITHUB_PAT
-    gh_username          = var.GITHUB_USERNAME
-    gh_repo              = var.GITHUB_REPO
+    default_user         = var.EC2_DEFAULT_USER
   })
   key_name               = aws_key_pair.ec2_key_pair.key_name
 
@@ -59,7 +57,7 @@ resource "null_resource" "ec2_provisioner" {
   depends_on = [aws_instance.Amazon_Linux]
   connection {
     type        = "ssh"
-    user        = "ec2-user"
+    user        = var.EC2_DEFAULT_USER
     host        = aws_instance.Amazon_Linux.public_ip
   }
 
