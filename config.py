@@ -45,11 +45,16 @@ class RedisConfig(core_base.ServiceConfig):
 
 class TelegramBotConfig(BaseSettings):
     TG_TOKEN: str
+    TG_WEBHOOK_PROXY_NGROK_DOMAIN: str
     TG_PARSE_MODE: str = "HTML"
 
     @property
     def webhook_path(self) -> str:
         return f"/bot/{self.TG_TOKEN}"
+
+    @property
+    def webhook_url(self) -> str:
+        return f"https://{self.TG_WEBHOOK_PROXY_NGROK_DOMAIN}{self.webhook_path}"
 
 
 class Config(BaseSettings):

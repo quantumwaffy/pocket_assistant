@@ -163,4 +163,4 @@ cython_debug/
 #Project
 
 #Terraform
-terraform/user_data.sh
+user_data.sh

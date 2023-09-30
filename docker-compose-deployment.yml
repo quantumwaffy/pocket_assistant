@@ -9,6 +9,8 @@ services:
         condition: service_started
       redis:
         condition: service_healthy
+      ngrok:
+        condition: service_started
     container_name: pocket_assistant_api
     env_file:
       - .env
@@ -42,6 +44,14 @@ services:
     command: redis-server --save 20 1 --loglevel warning --port ${REDIS_PORT}
     volumes:
       - cache:/data
+
+  ngrok:
+    image: ngrok/ngrok
+    container_name: ngrok
+    env_file:
+      - .env
+    restart: on-failure
+    command: http --domain=${TG_WEBHOOK_PROXY_NGROK_DOMAIN} ${API_HOST}:${API_PORT}
 
 volumes:
   mongo_data:

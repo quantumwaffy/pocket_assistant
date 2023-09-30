@@ -7,7 +7,7 @@ env_clone_dir := env_gist_temp
 
 # --- Application virtual environment settings (can be changed)
 env_file_name := .env
-env_snippet_repo := git@github.com:ba2cdbc59e955b924f11ffc7a1c97530.git
+env_snippet_repo := $(GIST_REPO)
 
 # --- Docker
 compose_cmd := docker compose -f

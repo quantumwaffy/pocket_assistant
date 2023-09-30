@@ -63,10 +63,10 @@ resource "null_resource" "ec2_provisioner" {
 
   provisioner "remote-exec" {
     inline = [
-      templatefile("./modules/ec2/ec2_github_runner.sh.tpl", {
-    gh_pat      = var.GITHUB_PAT
-    gh_username = var.GITHUB_USERNAME
-    gh_repo     = var.GITHUB_REPO
+      templatefile("./modules/ec2/ec2_post_init.sh.tpl", {
+    gh_pat       = var.GITHUB_PAT
+    gh_username  = var.GITHUB_USERNAME
+    gh_repo      = var.GITHUB_REPO
   })
     ]
   }
