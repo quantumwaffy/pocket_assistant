@@ -15,4 +15,4 @@ sudo usermod -aG docker ${default_user}
 sudo apt install -y make
 
 #Git
-sudo apt install -y make git
+sudo apt install -y git

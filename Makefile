@@ -44,7 +44,9 @@ env:
 	@if [ ! -f $(default_env_file_name) ]; then \
   		git clone  $(env_snippet_repo) $(env_clone_dir) && \
   		mv $(env_clone_dir)/$(env_file_name) ./$(default_env_file_name) && \
-  		rm -rf $(env_clone_dir); \
+  		rm -rf $(env_clone_dir) && \
+  		echo "TG_TOKEN=$(TG_TOKEN)" >> $(default_env_file_name) && \
+  		echo "NGROK_AUTHTOKEN=$(NGROK_AUTHTOKEN)" >> $(default_env_file_name); \
   	fi
   	env_arg := --env-file $(default_env_file_name)
 
@@ -115,3 +117,4 @@ updmain: env
 
 rsmain: env
 	@$(compose_local) $(env_arg) restart $(main_app_service_name)
+	$(MAKE) logs

@@ -43,14 +43,14 @@ class RedisConfig(core_base.ServiceConfig):
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
 
 
-class TelegramBotConfig(BaseSettings):
+class TelegramBotConfig(core_mixins.EnvConfigMixin):
     TG_TOKEN: str
     TG_WEBHOOK_PROXY_NGROK_DOMAIN: str
     TG_PARSE_MODE: str = "HTML"
 
     @property
     def webhook_path(self) -> str:
-        return f"/bot/{self.TG_TOKEN}"
+        return "/webhook"
 
     @property
     def webhook_url(self) -> str:

@@ -1,5 +1,5 @@
 import abc
-from typing import Type, TypeVar
+from typing import Any, Type, TypeVar
 
 from . import mixins
 
@@ -17,6 +17,6 @@ SingletonClass = TypeVar("SingletonClass")
 class SingletonMeta(type):
     _instances: dict[Type[SingletonClass], SingletonClass] = {}
 
-    def __call__(cls, *args, **kwargs) -> SingletonClass:
+    def __call__(cls, *args: tuple[Any, ...], **kwargs: dict[str, Any]) -> SingletonClass:
         instance: SingletonClass = cls._instances.setdefault(cls, super().__call__(*args, **kwargs))
         return instance

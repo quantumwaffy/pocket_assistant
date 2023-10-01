@@ -11,3 +11,10 @@ class TaskAction(core_mixins.EnumExtraMethodsMixin, StrEnum):
 class Task(core_mixins.EnumExtraMethodsMixin, StrEnum):
     LED = "LEDSocketTask"
     BUZZER = "BuzzerTask"
+
+
+class SensorMeasurementUnit(core_mixins.EnumExtraMethodsMixin, StrEnum):
+    temperature = "°C"
+    humidity = "Rh"
+    sound = "dB"
+    light = "nm"

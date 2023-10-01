@@ -9,4 +9,4 @@ class SensorData(Document):
     humidity: float | None = None
     sound: int | None = None
     light: int | None = None
-    timestamp: int = Field(default_factory=lambda: datetime.datetime.now().timestamp())
+    timestamp: float = Field(default_factory=lambda: datetime.datetime.now().timestamp())
